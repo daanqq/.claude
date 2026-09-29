@@ -13,7 +13,8 @@ This directory separates upstream skill updates from local intent.
 2. Preserve unexplained local differences until their origin is known. Classify and document them before updating.
 3. An overlay describes behavior and client compatibility, not line numbers or copied diff hunks.
 4. Keep one overlay per customized upstream skill. Exact and local skills do not need empty overlay files.
-5. After an accepted edit, refresh installed hashes and run the source check. A hash is a drift detector, not a substitute for the semantic overlay.
+5. Skills updated by their own installer, such as the `plannotator` plugin skills, belong in `.gitignore`, not in the manifest. The check skips git-ignored skill directories.
+6. After an accepted edit, refresh installed hashes and run the source check. A hash is a drift detector, not a substitute for the semantic overlay.
 
 ## Commands
 

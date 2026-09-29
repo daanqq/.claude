@@ -163,7 +163,7 @@
     },
     "mr-echat": {
       "tracking": "local",
-      "installed_hash": "31502276fb470f779d1faeec1ba85865b3f4e138702576993d32a77ae2ace4f1"
+      "installed_hash": "599ff7952a8ff42d78e93d2ca7ba06a23feee7fb454f458a1972eddfa4c3b9f5"
     },
     "optimize-images": {
       "tracking": "local",
@@ -188,6 +188,14 @@
       "path": "skills/in-progress/retro",
       "overlay": "overlays/retro.md",
       "installed_hash": "783ab894501588405ac2a8f8ea456f239eda1b198e8275a42a6b07f163f0b433"
+    },
+    "review-gpt": {
+      "tracking": "local",
+      "installed_hash": "3dc7ece99663e740235114a242d5ab878629e0314ace5326de60b7ceb26979d4"
+    },
+    "review-plan-gpt": {
+      "tracking": "local",
+      "installed_hash": "2c6f647d70a2db490c89e5169beb8caaf6d7819d4ba1ca86916ce362d8f4ae12"
     },
     "show-me": {
       "tracking": "overlay",

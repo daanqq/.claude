@@ -114,6 +114,21 @@ def missing_relative_links(skill_dir: Path) -> list[tuple[Path, str]]:
     return missing
 
 
+def git_ignored(paths: list[Path]) -> set[Path]:
+    """Return paths excluded by .gitignore; their owners update them outside this inventory."""
+    if not paths:
+        return set()
+    result = subprocess.run(
+        ["git", "-C", str(ROOT), "check-ignore", "--", *(str(path) for path in paths)],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    if result.returncode not in (0, 1):
+        raise RuntimeError(f"git check-ignore failed: {result.stderr.strip()}")
+    return {Path(line) for line in result.stdout.splitlines()}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check-sources", action="store_true")
@@ -123,7 +138,9 @@ def main() -> int:
     data = json.loads(MANIFEST.read_text(encoding="utf-8"))
     repositories = data.get("repositories", {})
     declared = data.get("skills", {})
-    actual = {path.name for path in SKILLS.iterdir() if (path / "SKILL.md").is_file()}
+    installed = [path for path in SKILLS.iterdir() if (path / "SKILL.md").is_file()]
+    ignored = git_ignored(installed)
+    actual = {path.name for path in installed if path not in ignored}
     errors: list[str] = []
 
     if set(declared) != actual:
