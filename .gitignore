@@ -16,6 +16,9 @@ cache/
 session-env/
 shell-snapshots/
 statsig/
+usage-data/
+stats-cache.json
+mcp-needs-auth-cache.json
 telemetry/
 ide/
 file-history/
