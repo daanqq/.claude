@@ -9,11 +9,11 @@ from pathlib import Path
 from urllib.error import HTTPError
 
 
-MODULE_PATH = Path(__file__).parents[1] / "scripts" / "analyze_eutp.py"
-SPEC = importlib.util.spec_from_file_location("analyze_eutp", MODULE_PATH)
+MODULE_PATH = Path(__file__).parents[1] / "scripts" / "fetch_eutp.py"
+SPEC = importlib.util.spec_from_file_location("fetch_eutp", MODULE_PATH)
 assert SPEC and SPEC.loader
-analyze_eutp = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(analyze_eutp)
+fetch_eutp = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(fetch_eutp)
 
 
 class FakeResponse:
@@ -35,24 +35,24 @@ class FakeResponse:
 class ExtractIdTests(unittest.TestCase):
     def test_extracts_from_url_case_insensitively(self) -> None:
         value = "https://youtrack.esoft.tech/issue/eutp-12345/details"
-        self.assertEqual(analyze_eutp.extract_eutp_id(value), "EUTP-12345")
+        self.assertEqual(fetch_eutp.extract_eutp_id(value), "EUTP-12345")
 
     def test_allows_same_id_repeated_in_text(self) -> None:
         value = "Issue EUTP-42 mirrors https://host/issue/eutp-42"
-        self.assertEqual(analyze_eutp.extract_eutp_id(value), "EUTP-42")
+        self.assertEqual(fetch_eutp.extract_eutp_id(value), "EUTP-42")
 
     def test_rejects_missing_id(self) -> None:
-        with self.assertRaises(analyze_eutp.InputError):
-            analyze_eutp.extract_eutp_id("EUTP-no-number")
+        with self.assertRaises(fetch_eutp.InputError):
+            fetch_eutp.extract_eutp_id("EUTP-no-number")
 
     def test_rejects_multiple_distinct_ids(self) -> None:
-        with self.assertRaises(analyze_eutp.InputError):
-            analyze_eutp.extract_eutp_id("Compare EUTP-1 and EUTP-2")
+        with self.assertRaises(fetch_eutp.InputError):
+            fetch_eutp.extract_eutp_id("Compare EUTP-1 and EUTP-2")
 
 
 class SessionTests(unittest.TestCase):
     def test_explicit_session_wins_over_environment(self) -> None:
-        session = analyze_eutp.resolve_session(
+        session = fetch_eutp.resolve_session(
             explicit="explicit-secret",
             session_file=None,
             from_stdin=False,
@@ -64,7 +64,7 @@ class SessionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "session"
             path.write_text("file-secret\n", encoding="utf-8")
-            session = analyze_eutp.resolve_session(
+            session = fetch_eutp.resolve_session(
                 explicit=None,
                 session_file=str(path),
                 from_stdin=False,
@@ -73,7 +73,7 @@ class SessionTests(unittest.TestCase):
         self.assertEqual(session, "file-secret")
 
     def test_reads_session_from_stdin(self) -> None:
-        session = analyze_eutp.resolve_session(
+        session = fetch_eutp.resolve_session(
             explicit=None,
             session_file=None,
             from_stdin=True,
@@ -86,8 +86,8 @@ class SessionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "session"
             path.write_bytes(b"\xff")
-            with self.assertRaises(analyze_eutp.CredentialError):
-                analyze_eutp.resolve_session(
+            with self.assertRaises(fetch_eutp.CredentialError):
+                fetch_eutp.resolve_session(
                     explicit=None,
                     session_file=str(path),
                     from_stdin=False,
@@ -95,8 +95,8 @@ class SessionTests(unittest.TestCase):
                 )
 
     def test_rejects_multiline_session(self) -> None:
-        with self.assertRaises(analyze_eutp.CredentialError):
-            analyze_eutp.resolve_session(
+        with self.assertRaises(fetch_eutp.CredentialError):
+            fetch_eutp.resolve_session(
                 explicit="first\nsecond",
                 session_file=None,
                 from_stdin=False,
@@ -114,7 +114,7 @@ class FetchTests(unittest.TestCase):
             captured["timeout"] = timeout
             return FakeResponse(b'{"id":"EUTP-7","title":"Test"}')
 
-        payload = analyze_eutp.fetch_issue(
+        payload = fetch_eutp.fetch_issue(
             "EUTP-7",
             "top-secret",
             timeout=2.5,
@@ -130,8 +130,8 @@ class FetchTests(unittest.TestCase):
         self.assertEqual(captured["timeout"], 2.5)
 
     def test_rejects_non_json_response(self) -> None:
-        with self.assertRaises(analyze_eutp.ResponseError):
-            analyze_eutp.fetch_issue(
+        with self.assertRaises(fetch_eutp.ResponseError):
+            fetch_eutp.fetch_issue(
                 "EUTP-7",
                 "secret",
                 opener=lambda request, timeout: FakeResponse(b"not-json"),
@@ -139,8 +139,8 @@ class FetchTests(unittest.TestCase):
 
     def test_rejects_wrong_issue_payload(self) -> None:
         body = json.dumps({"id": "EUTP-8", "title": "Wrong"}).encode()
-        with self.assertRaises(analyze_eutp.ResponseError):
-            analyze_eutp.fetch_issue(
+        with self.assertRaises(fetch_eutp.ResponseError):
+            fetch_eutp.fetch_issue(
                 "EUTP-7",
                 "secret",
                 opener=lambda request, timeout: FakeResponse(body),
@@ -148,8 +148,8 @@ class FetchTests(unittest.TestCase):
 
     def test_rejects_json_error_object_without_issue_fields(self) -> None:
         body = json.dumps({"error": "unauthorized"}).encode()
-        with self.assertRaises(analyze_eutp.ResponseError):
-            analyze_eutp.fetch_issue(
+        with self.assertRaises(fetch_eutp.ResponseError):
+            fetch_eutp.fetch_issue(
                 "EUTP-7",
                 "secret",
                 opener=lambda request, timeout: FakeResponse(body),
@@ -159,12 +159,12 @@ class FetchTests(unittest.TestCase):
         def opener(request, timeout):
             raise HTTPError(request.full_url, 401, "Unauthorized", {}, None)
 
-        with self.assertRaisesRegex(analyze_eutp.FetchError, "HTTP 401"):
-            analyze_eutp.fetch_issue("EUTP-7", "secret", opener=opener)
+        with self.assertRaisesRegex(fetch_eutp.FetchError, "HTTP 401"):
+            fetch_eutp.fetch_issue("EUTP-7", "secret", opener=opener)
 
     def test_rejects_oversized_response(self) -> None:
-        with self.assertRaises(analyze_eutp.ResponseError):
-            analyze_eutp.fetch_issue(
+        with self.assertRaises(fetch_eutp.ResponseError):
+            fetch_eutp.fetch_issue(
                 "EUTP-7",
                 "secret",
                 opener=lambda request, timeout: FakeResponse(b"{}", headers={"Content-Length": "3"}),
@@ -192,7 +192,7 @@ class FormattingTests(unittest.TestCase):
         }
 
     def test_normalizes_to_stable_schema(self) -> None:
-        context = analyze_eutp.normalize_issue(
+        context = fetch_eutp.normalize_issue(
             self.sample_payload(), "EUTP-99", extra_context="Контекст пользователя"
         )
 
@@ -210,7 +210,7 @@ class FormattingTests(unittest.TestCase):
             "childrens": [{"id": f"EUTP-{index}"} for index in range(25)],
         }
 
-        context = analyze_eutp.normalize_issue(payload, "EUTP-99")
+        context = fetch_eutp.normalize_issue(payload, "EUTP-99")
 
         self.assertEqual(
             context["issue"]["links"]["childrens"],
@@ -221,7 +221,7 @@ class FormattingTests(unittest.TestCase):
             },
         )
         self.assertEqual(context["issue"]["links"]["parent"], [{"id": "EUTP-1"}])
-        markdown = analyze_eutp.render_markdown(context)
+        markdown = fetch_eutp.render_markdown(context)
         self.assertIn('"count":25', markdown)
         self.assertNotIn("EUTP-24", markdown)
 
@@ -230,15 +230,15 @@ class FormattingTests(unittest.TestCase):
         children = [f"EUTP-{index}" for index in range(25)]
         payload["links"] = {"childrens": children}
 
-        context = analyze_eutp.normalize_issue(payload, "EUTP-99", links_mode="full")
+        context = fetch_eutp.normalize_issue(payload, "EUTP-99", links_mode="full")
 
         self.assertEqual(context["issue"]["links"]["childrens"], children)
 
     def test_markdown_contains_summary_description_and_user_context(self) -> None:
-        context = analyze_eutp.normalize_issue(
+        context = fetch_eutp.normalize_issue(
             self.sample_payload(), "EUTP-99", extra_context="Дополнительный контекст"
         )
-        markdown = analyze_eutp.render_markdown(context)
+        markdown = fetch_eutp.render_markdown(context)
 
         self.assertIn("## Задача EUTP-99: Pipe | title", markdown)
         self.assertIn("| Заголовок | Pipe \\| title |", markdown)
@@ -247,8 +247,8 @@ class FormattingTests(unittest.TestCase):
         self.assertIn("Дополнительный контекст", markdown)
 
     def test_markdown_marks_missing_values(self) -> None:
-        context = analyze_eutp.normalize_issue({"id": "EUTP-10"}, "EUTP-10")
-        markdown = analyze_eutp.render_markdown(context)
+        context = fetch_eutp.normalize_issue({"id": "EUTP-10"}, "EUTP-10")
+        markdown = fetch_eutp.render_markdown(context)
 
         self.assertIn("| Статус | — |", markdown)
         self.assertIn("(описание отсутствует)", markdown)

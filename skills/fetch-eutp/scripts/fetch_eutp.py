@@ -127,7 +127,7 @@ def fetch_issue(
         headers={
             "Accept": "application/json",
             "Cookie": f"pora-gatekeeper-session={_validate_session(session)}",
-            "User-Agent": "analyze-eutp-agent-skill/1",
+            "User-Agent": "fetch-eutp-agent-skill/1",
         },
         method="GET",
     )

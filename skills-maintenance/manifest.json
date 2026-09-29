@@ -35,7 +35,7 @@
   "skills": {
     "analyze-eutp": {
       "tracking": "local",
-      "installed_hash": "726e4bba512c7e4e805e17f8b4a0757bd0e00ed05f52dd1775cda5d55118c5c8"
+      "installed_hash": "db8958ef8432230bdb91941a674d612cd69f9c959d926591980808785006f568"
     },
     "blast-radius": {
       "tracking": "overlay",
@@ -87,6 +87,10 @@
     "eutp-worktree-transfer": {
       "tracking": "local",
       "installed_hash": "fd02448807001b71580220b546dfd6d7fb5d3f7e680b48eba57bedc7e7533181"
+    },
+    "fetch-eutp": {
+      "tracking": "local",
+      "installed_hash": "f2397165e2ca91da7b55bb89869b2478c6522e0667c236b30da59bc65240a08f"
     },
     "fix-gitlab-mr-conflicts": {
       "tracking": "local",
