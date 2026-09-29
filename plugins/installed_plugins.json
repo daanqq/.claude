@@ -4,11 +4,21 @@
     "frontend-design@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "/home/user/.claude/plugins/cache/claude-plugins-official/frontend-design/fa59bc903774",
-        "version": "fa59bc903774",
+        "installPath": "/home/user/.claude/plugins/cache/claude-plugins-official/frontend-design/fbe07fb6ce7d",
+        "version": "fbe07fb6ce7d",
         "installedAt": "2026-09-25T08:54:34.657Z",
-        "lastUpdated": "2026-09-26T04:20:37.709Z",
-        "gitCommitSha": "fa59bc9037741ecfa131aa27938272605710d7b2"
+        "lastUpdated": "2026-09-29T04:29:57.679Z",
+        "gitCommitSha": "fbe07fb6ce7d51d8e86ca6efdf050059894cdb80"
+      }
+    ],
+    "plannotator@plannotator": [
+      {
+        "scope": "user",
+        "installPath": "/home/user/.claude/plugins/cache/plannotator/plannotator/0.27.21",
+        "version": "0.27.21",
+        "installedAt": "2026-09-27T09:11:23.371Z",
+        "lastUpdated": "2026-09-27T09:11:23.371Z",
+        "gitCommitSha": "4b20581222077adfffba7b588856ceaa91496a47"
       }
     ]
   }

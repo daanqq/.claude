@@ -7,7 +7,8 @@
     "CLAUDE_CODE_PROMPT_CACHE_TTL": "1h",
     "CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL": "1h",
     "CLAUDE_CODE_SUBAGENT_MODEL": "claude-sonnet-5",
-    "CLAUDE_CODE_SCROLL_SPEED": "3"
+    "CLAUDE_CODE_SCROLL_SPEED": "3",
+    "ENABLE_TOOL_SEARCH": "true"
   },
   "attribution": {
     "commit": "",
@@ -41,7 +42,27 @@
   },
   "model": "opus[1m]",
   "disableClaudeAiConnectors": true,
-  "disableBundledSkills": true,
+  "skillOverrides": {
+    "artifact-components": "off",
+    "batch": "off",
+    "claude-in-chrome": "off",
+    "debug": "off",
+    "design-sync": "off",
+    "doctor": "off",
+    "explain-usage": "off",
+    "fewer-permission-prompts": "off",
+    "keybindings-help": "off",
+    "run": "off",
+    "run-skill-generator": "off",
+    "setup-claude": "off",
+    "update-config": "off",
+    "dataviz": "off",
+    "simplify": "off",
+    "loop": "off",
+    "init": "user-invocable-only",
+    "team-onboarding": "user-invocable-only",
+    "security-review": "user-invocable-only"
+  },
   "hooks": {
     "SessionStart": [
       {
@@ -67,16 +88,27 @@
     "refreshInterval": 30
   },
   "enabledPlugins": {
-    "frontend-design@claude-plugins-official": true
+    "frontend-design@claude-plugins-official": true,
+    "plannotator@plannotator": true
+  },
+  "extraKnownMarketplaces": {
+    "plannotator": {
+      "source": {
+        "source": "github",
+        "repo": "backnotprop/plannotator"
+      }
+    }
   },
   "effortLevel": "high",
   "modelSettings": {
     "claude-opus-5-5": {
-      "effortLevel": "medium"
+      "effortLevel": "high"
     }
   },
   "promptSuggestionEnabled": false,
   "awaySummaryEnabled": false,
+  "askUserQuestionTimeout": "never",
+  "dialogExpiry": "never",
   "tui": "fullscreen",
   "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
